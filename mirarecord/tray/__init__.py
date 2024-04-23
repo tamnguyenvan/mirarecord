@@ -1,0 +1,1 @@
+from .views.tray import Tray

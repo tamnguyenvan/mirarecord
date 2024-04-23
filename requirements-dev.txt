@@ -1,0 +1,6 @@
+pyqt6-tools
+opencv-python
+vidgear
+pyscreenshot
+loguru
+pynput
