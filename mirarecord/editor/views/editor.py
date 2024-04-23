@@ -20,7 +20,7 @@ class Editor(QMainWindow):
         self.center()
 
         self.intit_state()
-        self.video_processor = VideoProcessor(state.input_path)
+        self.video_processor = VideoProcessor(state.input_path, mouse_history=state.mouse_history)
 
         self.next_frame()
 
@@ -313,16 +313,12 @@ class Editor(QMainWindow):
         self.timer.timeout.connect(self.next_frame)
         self.state.is_video_playing = False
 
-        self.play_button.clicked.connect(self.play_video)
+        self.play_button.clicked.connect(self.play_or_pause_video)
         # self.pause_button.clicked.connect(self.pause_video)
         self.next_button.clicked.connect(self.next_frame)
         self.prev_button.clicked.connect(self.previous_frame)
 
-    def next_frame(self):
-        q_image = self.video_processor.get()
-
-        # image = QImage(frame, frame.shape[1], frame.shape[0], QImage.Format.Format_RGB888)
-
+    def show_frame(self, q_image):
         # Scale the image to fit the video_label while maintaining aspect ratio
         if q_image is not None:
             scaled_image = q_image.scaled(self.video_label.size(), Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
@@ -332,19 +328,20 @@ class Editor(QMainWindow):
             self.video_label.setPixmap(pixmap)
             self.video_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
 
+    def next_frame(self):
+        q_image = self.video_processor.next_frame()
+        self.show_frame(q_image)
+
     def previous_frame(self):
         # Move back to the previous frame
-        current_frame = self.video_capture.get(cv2.CAP_PROP_POS_FRAMES)
-        self.video_capture.set(cv2.CAP_PROP_POS_FRAMES, current_frame - 2)  # Move back 2 frames (1 frame for current, 1 frame for previous)
-        # self.next_frame()
+        q_frame = self.video_processor.previous_frame()
+        self.show_frame(q_frame)
 
-    def play_video(self):
+    def play_or_pause_video(self):
         if not self.state.is_video_playing:
             self.timer.start(33)  # Update frame every 33 milliseconds (30 fps)
             self.state.is_video_playing = True
-
-    def pause_video(self):
-        if self.state.is_video_playing:
+        else:
             self.timer.stop()
             self.state.is_video_playing = False
 

@@ -32,7 +32,7 @@ class Tray(QSystemTrayIcon):
         self.hide()
         input_path = self.recorder.stop()
 
-        state = EditorState(input_path=input_path)
+        state = EditorState(input_path=input_path, mouse_history=self.recorder.mouse_history)
         self.editor = Editor(state=state)
         self.editor.show()
 

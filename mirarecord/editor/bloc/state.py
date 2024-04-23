@@ -1,3 +1,4 @@
+from typing import Dict, List
 from dataclasses import dataclass
 
 
@@ -5,3 +6,4 @@ from dataclasses import dataclass
 class EditorState:
     input_path: str = ''
     is_video_playing: bool = False
+    mouse_history: Dict[str, List[int]] = None
